@@ -1,9 +1,9 @@
 import sys
 
 # Importa as classes em português que nós estruturamos
-from config import Configuracao
-from conector_bd import ConectorBD
-from repositorio import Repositorio
+from SistemaPredicaoDengue.config import Configuracao
+from SistemaPredicaoDengue.conector_bd import ConectorBD
+from SistemaPredicaoDengue.repositorio import Repositorio
 
 def executar_inicializacao():
 
