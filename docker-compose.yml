@@ -1,0 +1,54 @@
+services:
+  app:
+    build: .
+    depends_on:
+      db:
+        # Espera até o banco MySQL passar no teste de saúde (healthcheck) antes de ligar o Python.
+        condition: service_healthy
+    environment:
+      # --- Parâmetros de conexão (A classe Configuracao lê daqui) ---
+      MYSQL_HOST: db
+      MYSQL_PORT: "3306"
+      MYSQL_DATABASE: dengue_db
+      MYSQL_USER: dengue_user
+      MYSQL_PASSWORD: dengue_pass
+      # --- Comportamento do Pipeline (mude para "predict" quando for fazer previsões) ---
+      PIPELINE_MODE: train
+      MODEL_TYPE: xgboost
+      DATA_DIR: /app/data
+      MODEL_DIR: /app/model_store
+    volumes:
+      # Permite colocar os arquivos CSV na sua pasta 'data' sem precisar reconstruir o Docker.
+      - ./data:/app/data
+      # Salva os modelos treinados da IA para que não sejam perdidos.
+      - ./model_store:/app/model_store
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: dengue_db
+      MYSQL_USER: dengue_user
+      MYSQL_PASSWORD: dengue_pass
+    volumes:
+      # Salva os dados do banco de dados direto no disco rígido do seu computador.
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      # Fica testando (dando 'ping') para ver se o banco já ligou e está aceitando conexões.
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+volumes:
+  mysql_data:
+
+
+
+
+
+
+
+
+
